@@ -30,10 +30,10 @@ public class MainScreen implements Screen, Observer {
         JLabel header = new JLabel("Financia");
         header.setFont(ResourceLoader.getInstance().getRighteousFont(52));
         header.setForeground(new Color(224, 159, 54));
-        JLabel welcome = new JLabel("Welcome, " + LoginUser.getInstance().getBalance() + "!");
+        JLabel welcome = new JLabel("Welcome, " + LoginUser.getLoggedInUser().getBalance() + "!");
         mainPanel.add(GuiUtils.group(GuiUtils.VERTICAL, header, welcome), BorderLayout.NORTH);
 
-        balanceDisplay = new JLabel(String.valueOf(LoginUser.getInstance().getBalance()));
+        balanceDisplay = new JLabel(String.valueOf(LoginUser.getLoggedInUser().getBalance()));
         mainPanel.add(balanceDisplay, BorderLayout.NORTH);
 
         JScrollPane transactionList = getTable();
@@ -61,7 +61,7 @@ public class MainScreen implements Screen, Observer {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(200, 144, 25));
+                g.setColor(new Color(224, 159, 54));
                 g.fillOval(0, 0, this.getWidth(), this.getHeight());
 
                 g.setColor(Color.BLACK);
@@ -93,7 +93,7 @@ public class MainScreen implements Screen, Observer {
 
     @Override
     public void update() {
-        balanceDisplay.setText(String.valueOf(LoginUser.getInstance().updateBalance()));
+        balanceDisplay.setText(String.valueOf(LoginUser.getLoggedInUser().updateBalance()));
         resetTableValues();
     }
 
@@ -104,7 +104,7 @@ public class MainScreen implements Screen, Observer {
                 "Date",
                 "Reoccurring"
         }); //Clear the table
-        for (Transaction t : LoginUser.getInstance().getTransactions()) {
+        for (Transaction t : LoginUser.getLoggedInUser().getTransactions()) {
             transactionTableModel.addRow(t.toArray());
         }
     }

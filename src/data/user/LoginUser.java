@@ -6,13 +6,15 @@ import main.App;
 
 import java.util.Arrays;
 
-public class LoginUser extends User {
-    private User loggedInUser;
-    private static final LoginUser instance = new LoginUser();
+public class LoginUser {
+    private static User loggedInUser;
 
     private LoginUser() {}
 
-    public boolean login(User user, char[] password) {
+    public static boolean login(User user, char[] password) {
+        if (user == null) {
+            return false;
+        }
         if (!(
                 //Needed qualifications to login
                 Arrays.toString(password).equals(user.getPassword())
@@ -23,16 +25,16 @@ public class LoginUser extends User {
         return true;
     }
 
-    public void logout() {
+    public static void logout() {
         loggedInUser = null;
         App.getInstance().switchScreen(new LoginScreen());
     }
 
-    public boolean isLoggedIn() {
+    public static boolean isLoggedIn() {
         return loggedInUser == null;
     }
 
-    public static LoginUser getInstance() {
-        return instance;
+    public static User getLoggedInUser() {
+        return loggedInUser;
     }
 }

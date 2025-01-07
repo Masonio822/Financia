@@ -13,7 +13,7 @@ public class TransactionTableModel implements TableModel {
     private Object[][] data;
 
     public TransactionTableModel() {
-        data = new Object[][]{LoginUser.getInstance().getTransactions()
+        data = new Object[][]{LoginUser.getLoggedInUser().getTransactions()
                 .stream()
                 .map(Transaction::toArray)
                 .toArray()

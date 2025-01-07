@@ -6,17 +6,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class User implements Serializable, Cloneable {
     private final String username;
     private final String password;
     private List<Transaction> transactions;
     private double balance;
+    private final UUID uuid;
 
     //For the login user which should have a private constructor
     protected User() {
         this.username = "";
         this.password = "";
+        this.uuid = null;
     }
 
     public User(String username, String password) {
@@ -24,6 +27,7 @@ public class User implements Serializable, Cloneable {
         this.password = password;
         this.transactions = new ArrayList<>();
         this.balance = 0;
+        this.uuid = UUID.randomUUID();
     }
 
     public User(String username, String password, List<Transaction> transactions) {
@@ -39,22 +43,25 @@ public class User implements Serializable, Cloneable {
         String path = System.getenv("ProgramFiles") + "\\Financia\\users";
         File file = new File(path);
         file.mkdirs();
-        file = new File(path + "\\" + this.hashCode() + ".ser");
+        file = new File(path + "\\" + this.uuid + ".ser");
         try (
                 FileOutputStream fileStream = new FileOutputStream(file);
                 ObjectOutputStream objectStream = new ObjectOutputStream(fileStream)
         ) {
             //TODO encrypt with SHA256
             objectStream.writeObject(this);
-            UserHelper.addUserToCache(this);
         } catch (IOException e) {
             throw new RuntimeException("Could not save user!\nThis may be caused by invalid permissions");
         }
     }
 
 
-    public boolean equals(String username, String password) {
-        return username.equals(this.username) && password.equals(this.password);
+    public boolean equalsIgnoreUuid(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(username, user.username)
+                && Objects.equals(password, user.password);
     }
 
     @Override
@@ -62,7 +69,9 @@ public class User implements Serializable, Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password);
+        return Objects.equals(username, user.username)
+                && Objects.equals(password, user.password)
+                && Objects.equals(uuid, user.uuid);
     }
 
     @Override
@@ -102,5 +111,9 @@ public class User implements Serializable, Cloneable {
                 .mapToDouble(Transaction::amount)
                 .sum();
         return balance;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 }

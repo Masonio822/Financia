@@ -2,6 +2,7 @@ package gui.screen;
 
 import data.user.LoginUser;
 import data.user.User;
+import data.user.UserHelper;
 import gui.RoundedBorder;
 import main.ResourceLoader;
 
@@ -52,14 +53,15 @@ public class LoginScreen implements Screen {
             } else {
                 User user = new User(usernameField.getText(), Arrays.toString(passwordField.getPassword()));
                 user.save();
+                UserHelper.cacheUsers();
             }
         }), gbc);
 
         gbc.gridx = 1;
         loginPanel.add(createButton("Login", l -> {
-            User u = new User(usernameField.getText(), Arrays.toString(passwordField.getPassword()));
-            if (!(LoginUser.getInstance().login(u, passwordField.getPassword()))) {
-                error.setText("The username or password is incorrect!");
+            if (!(UserHelper.containsIgnoreUuid(new User(usernameField.getText(), Arrays.toString(passwordField.getPassword())))
+                    && LoginUser.login(UserHelper.match(usernameField.getText(), Arrays.toString(passwordField.getPassword())), passwordField.getPassword()))) {
+                error.setText("Could not find that user!");
                 error.setVisible(true);
             }
         }), gbc);

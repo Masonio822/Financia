@@ -122,8 +122,9 @@ public class AddTransactionDialog extends JDialog {
                         LocalDate.parse(dateField.getText(), DateTimeFormatter.ofPattern("yyyy/MM/dd")),
                         reoccurringCheckBox.isSelected()
                 );
-                LoginUser.getInstance().addTransaction(transaction);
+                LoginUser.getLoggedInUser().addTransaction(transaction);
                 Notifier.update();
+                LoginUser.getLoggedInUser().save();
                 this.dispose();
             } catch (DateTimeParseException dateFormatException) {
                 error.setText("Invalid Date!");
