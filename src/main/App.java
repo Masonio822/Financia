@@ -1,6 +1,5 @@
 package main;
 
-import gui.BackgroundPanel;
 import gui.screen.LoginScreen;
 import gui.screen.Screen;
 
@@ -16,7 +15,6 @@ public class App {
         frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
         frame.setIconImage(new ImageIcon("resources//assets//logo.png").getImage());
-        frame.setContentPane(new BackgroundPanel(new ImageIcon("resources//assets//logo.png").getImage()));
 
         switchScreen(new LoginScreen());
     }

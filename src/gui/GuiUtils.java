@@ -11,14 +11,14 @@ public class GuiUtils {
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
 
-    public static JPanel group(int align, Container... containers) {
+    public static JPanel group(int align, Component... components) {
         JPanel panel = new JPanel();
         switch (align) {
             case VERTICAL -> panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             case HORIZONTAL -> panel.setLayout(new FlowLayout());
             default -> throw new RuntimeException("Invalid alignment type!");
         }
-        for (Container c : containers) {
+        for (Component c : components) {
             panel.add(c);
         }
         return panel;
@@ -52,5 +52,12 @@ public class GuiUtils {
                 0,
                 0
         );
+    }
+
+    public static Image resizeImage(Image image, Dimension size) {
+        return image.getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH);
+    }
+    public static ImageIcon resizeImage(ImageIcon icon, Dimension size) {
+        return new ImageIcon(icon.getImage().getScaledInstance(size.width, size.height, Image.SCALE_SMOOTH));
     }
 }
