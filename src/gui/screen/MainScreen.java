@@ -3,6 +3,7 @@ package gui.screen;
 import data.Transaction;
 import data.user.LoginUser;
 import gui.AddTransactionDialog;
+import gui.FilterDialog;
 import gui.GuiUtils;
 import gui.observer.Notifier;
 import gui.observer.Observer;
@@ -58,9 +59,22 @@ public class MainScreen implements Screen, Observer {
         JScrollPane transactionList = getTable();
         JTextField searchField = getSearchField();
 
+        JButton filterButton = new JButton(GuiUtils.resizeImage(new ImageIcon("resources\\assets\\filter_icon.png"), new Dimension(20, 20)));
+        filterButton.setPreferredSize(new Dimension(25, 25));
+        filterButton.addActionListener(l -> {
+            JDialog filterDialog = new FilterDialog(new String[]{
+                    "Company",
+                    "Amount",
+                    "Date",
+                    "Reoccurring"
+            });
+            filterDialog.setLocation(filterButton.getX() + 25, filterButton.getY());
+            filterDialog.setVisible(true);
+        });
         JPanel searchGroup = GuiUtils.group(GuiUtils.HORIZONTAL,
                 new JLabel(GuiUtils.resizeImage(new ImageIcon("resources\\assets\\search_icon.png"), new Dimension(20, 20))),
-                searchField
+                searchField,
+                filterButton
         );
         JPanel transactionGrouping = GuiUtils.group(GuiUtils.VERTICAL, searchGroup, transactionList);
         transactionGrouping.setBorder(new EmptyBorder(150, 100, 75, 100));
@@ -175,6 +189,11 @@ public class MainScreen implements Screen, Observer {
     public void update() {
         balanceDisplay.setText(String.valueOf(LoginUser.getLoggedInUser().updateBalance()));
         resetTableValues();
+    }
+
+    @Override
+    public void filter(RowFilter<? super TableModel, ? super Integer> filter) {
+        rowSorter.setRowFilter(filter);
     }
 
     public void resetTableValues() {
