@@ -13,7 +13,7 @@ public class ResourceLoader {
     public void load() {
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            righteousFont = Font.createFont(Font.TRUETYPE_FONT, new File("resources\\fonts\\righteous.ttf"));
+            righteousFont = Font.createFont(Font.TRUETYPE_FONT, new File("src\\resources\\fonts\\righteous.ttf"));
             ge.registerFont(righteousFont);
         } catch (IOException | FontFormatException e) {
             throw new RuntimeException(e);

@@ -14,7 +14,7 @@ public class App {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
-        frame.setIconImage(new ImageIcon("resources//assets//logo.png").getImage());
+        frame.setIconImage(new ImageIcon("src\\resources\\assets\\logo.png").getImage());
 
         switchScreen(new LoginScreen());
     }

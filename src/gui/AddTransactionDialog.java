@@ -20,7 +20,7 @@ import java.time.format.DateTimeParseException;
 public class AddTransactionDialog extends JDialog {
     public AddTransactionDialog() {
         super();
-        setIconImage(new ImageIcon("resources//assets//logo.png").getImage());
+        setIconImage(new ImageIcon("src\\resources\\assets\\logo.png").getImage());
         setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
