@@ -11,8 +11,15 @@ import main.ResourceLoader;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.time.LocalDate;
 
 public class MainScreen implements Screen, Observer {
     private final JPanel mainPanel = new JPanel(new BorderLayout());
@@ -22,7 +29,19 @@ public class MainScreen implements Screen, Observer {
         "Amount",
         "Date",
         "Reoccurring"
-    }, 0);
+    }, 0) {
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0 -> {return String.class;}
+                case 1 -> {return Double.class;}
+                case 2 -> {return LocalDate.class;}
+                case 3 -> {return Boolean.class;}
+                default -> {return null;}
+            }
+        }
+    };
+    private final TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(transactionTableModel);
 
     public MainScreen() {
         Notifier.addObserver(this);
@@ -37,7 +56,15 @@ public class MainScreen implements Screen, Observer {
         mainPanel.add(balanceDisplay, BorderLayout.NORTH);
 
         JScrollPane transactionList = getTable();
-        mainPanel.add(transactionList, BorderLayout.CENTER);
+        JTextField searchField = getSearchField();
+
+        JPanel searchGroup = GuiUtils.group(GuiUtils.HORIZONTAL,
+                new JLabel(GuiUtils.resizeImage(new ImageIcon("resources\\assets\\search_icon.png"), new Dimension(20, 20))),
+                searchField
+        );
+        JPanel transactionGrouping = GuiUtils.group(GuiUtils.VERTICAL, searchGroup, transactionList);
+        transactionGrouping.setBorder(new EmptyBorder(150, 100, 75, 100));
+        mainPanel.add(transactionGrouping, BorderLayout.CENTER);
 
         JButton addTransactionButton = getTransactionButton();
         JPanel p = GuiUtils.align(GuiUtils.RIGHT, addTransactionButton);
@@ -47,13 +74,18 @@ public class MainScreen implements Screen, Observer {
 
     private JScrollPane getTable() {
         resetTableValues();
-        JTable transactionTable = new JTable(transactionTableModel);
+        JTable transactionTable = new JTable(transactionTableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        transactionTable.getTableHeader().setReorderingAllowed(false);
         transactionTable.setShowHorizontalLines(true);
         transactionTable.setFillsViewportHeight(true);
+        transactionTable.setRowSorter(rowSorter);
 
-        JScrollPane transactionList = new JScrollPane(transactionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        transactionList.setBorder(new EmptyBorder(100, 100, 100, 150));
-        return transactionList;
+        return new JScrollPane(transactionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
 
     private JButton getTransactionButton() {
@@ -86,6 +118,54 @@ public class MainScreen implements Screen, Observer {
         return addTransactionButton;
     }
 
+    private JTextField getSearchField() {
+        JTextField searchField = new JTextField();
+        searchField.setForeground(Color.GRAY);
+        searchField.setText("Search...");
+        searchField.setPreferredSize(new Dimension(400, 25));
+        searchField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (searchField.getText().equals("Search...")) {
+                    searchField.setForeground(Color.BLACK);
+                    searchField.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (searchField.getText().isEmpty()) {
+                    searchField.setForeground(Color.GRAY);
+                    searchField.setText("Search...");
+                }
+            }
+        });
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (!(searchField.getForeground().equals(Color.GRAY))) {
+                    search(searchField.getText());
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (!(searchField.getForeground().equals(Color.GRAY))) {
+                    search(searchField.getText());
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (!(searchField.getForeground().equals(Color.GRAY))) {
+                    search(searchField.getText());
+                }
+            }
+        });
+
+        return searchField;
+    }
+
     @Override
     public Container getContentPane() {
         return mainPanel;
@@ -106,6 +186,14 @@ public class MainScreen implements Screen, Observer {
         }); //Clear the table
         for (Transaction t : LoginUser.getLoggedInUser().getTransactions()) {
             transactionTableModel.addRow(t.toArray());
+        }
+    }
+
+    private void search(String text) {
+        if (text.trim().isEmpty()) {
+            rowSorter.setRowFilter(null);
+        } else {
+            rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
         }
     }
 }

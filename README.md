@@ -1,3 +1,4 @@
 # Financia
-Made by: Mason Elzy
-FBLA 2025 Coding and Programming submission
+**FBLA 2025 Coding and Programming submission**
+
+Made by: Mason Elzy<br>
