@@ -40,7 +40,7 @@ public class User implements Serializable, Cloneable {
     }
 
     public void save() {
-        String path = System.getenv("ProgramFiles") + "\\Financia\\users";
+        String path = System.getProperty("user.home") + "\\Documents\\Financia\\users";
         File file = new File(path);
         file.mkdirs();
         file = new File(path + "\\" + this.uuid + ".ser");

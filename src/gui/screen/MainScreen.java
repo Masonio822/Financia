@@ -19,6 +19,7 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 public class MainScreen implements Screen, Observer {
@@ -49,16 +50,18 @@ public class MainScreen implements Screen, Observer {
         JLabel header = new JLabel("Financia");
         header.setFont(ResourceLoader.getInstance().getRighteousFont(52));
         header.setForeground(new Color(224, 159, 54));
-        JLabel welcome = new JLabel("Welcome, " + LoginUser.getLoggedInUser().getBalance() + "!");
+        JLabel welcome = new JLabel("Welcome, " + LoginUser.getLoggedInUser().getUsername() + "!");
         mainPanel.add(GuiUtils.group(GuiUtils.VERTICAL, header, welcome), BorderLayout.NORTH);
 
-        balanceDisplay = new JLabel(String.valueOf(LoginUser.getLoggedInUser().getBalance()));
-        mainPanel.add(balanceDisplay, BorderLayout.NORTH);
+        balanceDisplay = new JLabel();
+        DecimalFormat df = new DecimalFormat("#,###.00");
+        balanceDisplay.setText("Balance: " + df.format(LoginUser.getLoggedInUser().getBalance()));
 
         JScrollPane transactionList = getTable();
         JTextField searchField = getSearchField();
 
         JPanel searchGroup = GuiUtils.group(GuiUtils.HORIZONTAL,
+                balanceDisplay,
                 new JLabel(GuiUtils.resizeImage(new ImageIcon("resources\\assets\\search_icon.png"), new Dimension(20, 20))),
                 searchField
         );
@@ -173,7 +176,8 @@ public class MainScreen implements Screen, Observer {
 
     @Override
     public void update() {
-        balanceDisplay.setText(String.valueOf(LoginUser.getLoggedInUser().updateBalance()));
+        DecimalFormat df = new DecimalFormat("#,###.00");
+        balanceDisplay.setText("Balance: " + df.format(LoginUser.getLoggedInUser().updateBalance()));
         resetTableValues();
     }
 

@@ -17,7 +17,7 @@ public class UserHelper {
     public static void cacheUsers() {
         cachedUsers = new HashSet<>();
 
-        File usersDir = new File(System.getenv("ProgramFiles") + "\\Financia\\users");
+        File usersDir = new File(System.getProperty("user.home") + "\\Documents\\Financia\\users");
         File[] userList = usersDir.listFiles();
 
         if (userList != null) {
