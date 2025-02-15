@@ -1,9 +1,9 @@
-package gui;
+package gui.screen;
 
 import data.Transaction;
 import data.user.LoginUser;
 import gui.observer.Notifier;
-import main.ResourceLoader;
+import main.App;
 
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
@@ -17,40 +17,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class AddTransactionDialog extends JDialog {
-    public AddTransactionDialog() {
-        super();
-        setIconImage(new ImageIcon("resources//assets//logo.png").getImage());
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        setTitle("Add Transaction");
-        setSize(400, 350);
-        setBackground(Color.WHITE);
-        setLayout(new GridBagLayout());
+public class AddTransactionScreen extends Screen {
+    public AddTransactionScreen() {
+        this.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(10, 5, 10, 5);
 
-        gbc.gridy = 1;
-        gbc.gridx = 1;
-        gbc.gridwidth = 3;
-        gbc.weightx = 1.0;
-        add(getHeader(), gbc);
         gbc.weightx = 0.0;
         gbc.gridwidth = 1;
 
         gbc.gridy = 2;
         gbc.gridx = 2;
-        add(new JLabel("Company: "), gbc);
+        this.add(new JLabel("Company: "), gbc);
         gbc.gridx = 3;
         JTextField companyField = createField();
-        add(companyField, gbc);
+        this.add(companyField, gbc);
 
         gbc.gridy = 3;
         gbc.gridx = 2;
-        add(new JLabel("Amount:  "), gbc);
+        this.add(new JLabel("Amount:  "), gbc);
         gbc.gridx = 3;
         JTextField amountField = createField();
         amountField.setText("$");
@@ -71,11 +58,11 @@ public class AddTransactionDialog extends JDialog {
             }
         });
         amountField.setPreferredSize(new Dimension(55, 20));
-        add(amountField, gbc);
+        this.add(amountField, gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 4;
-        add(new JLabel("Date: "), gbc);
+        this.add(new JLabel("Date: "), gbc);
         gbc.gridx = 3;
         JTextField dateField = createField();
         //Get the date
@@ -96,14 +83,14 @@ public class AddTransactionDialog extends JDialog {
                 }
             }
         });
-        add(dateField, gbc);
+        this.add(dateField, gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 5;
-        add(new JLabel("Reoccurring: "), gbc);
+        this.add(new JLabel("Reoccurring: "), gbc);
         gbc.gridx = 3;
         JCheckBox reoccurringCheckBox = new JCheckBox();
-        add(reoccurringCheckBox, gbc);
+        this.add(reoccurringCheckBox, gbc);
 
         JLabel error = new JLabel();
         error.setForeground(Color.RED);
@@ -125,7 +112,7 @@ public class AddTransactionDialog extends JDialog {
                 LoginUser.getLoggedInUser().addTransaction(transaction);
                 Notifier.update();
                 LoginUser.getLoggedInUser().save();
-                this.dispose();
+                this.close();
             } catch (DateTimeParseException dateFormatException) {
                 error.setText("Invalid Date!");
                 error.setVisible(true);
@@ -133,28 +120,22 @@ public class AddTransactionDialog extends JDialog {
                 error.setText("Invalid Amount!");
                 error.setVisible(true);
             } catch (NullPointerException npe) {
-                dispose();
+                this.close();
             }
         });
-        add(createButton, gbc);
+        this.add(createButton, gbc);
 
         gbc.gridy = 6;
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(new Dimension(133, 35));
-        cancelButton.addActionListener(l -> setVisible(false));
-        add(cancelButton, gbc);
+        cancelButton.addActionListener(l -> this.close());
+        this.add(cancelButton, gbc);
 
         gbc.gridy = 7;
         gbc.gridwidth = 3;
-        add(error, gbc);
-    }
-
-    private JLabel getHeader() {
-        JLabel heading = new JLabel("Add Transaction");
-        heading.setFont(ResourceLoader.getInstance().getRighteousFont(30));
-        return heading;
+        this.add(error, gbc);
     }
 
     private JTextField createField() {
@@ -163,5 +144,10 @@ public class AddTransactionDialog extends JDialog {
         field.setPreferredSize(new Dimension(100, 20));
         field.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         return field;
+    }
+
+    private void close() {
+        this.setVisible(false);
+        App.getInstance().switchScreen(new MainScreen());
     }
 }

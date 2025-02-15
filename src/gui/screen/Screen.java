@@ -1,7 +1,6 @@
 package gui.screen;
 
-import java.awt.*;
+import javax.swing.*;
 
-public interface Screen {
-    Container getContentPane();
+public abstract class Screen extends JPanel {
 }

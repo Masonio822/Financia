@@ -11,10 +11,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
-public class LoginScreen implements Screen {
-    JPanel loginScreen = new JPanel(new GridBagLayout());
+public class LoginScreen extends Screen {
 
     public LoginScreen() {
+        this.setLayout(new GridBagLayout());
+
         JPanel loginPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -76,15 +77,15 @@ public class LoginScreen implements Screen {
         title.setForeground(new Color(224, 159, 54));
         highGbc.fill = GridBagConstraints.HORIZONTAL;
         highGbc.anchor = GridBagConstraints.NORTH;
-        loginScreen.add(title, highGbc);
+        this.add(title, highGbc);
 
         highGbc.gridy = 1;
         highGbc.anchor = GridBagConstraints.CENTER;
-        loginScreen.add(loginPanel, highGbc);
+        this.add(loginPanel, highGbc);
 
         highGbc.gridy = 2;
         highGbc.fill = GridBagConstraints.VERTICAL;
-        loginScreen.add(error, highGbc);
+        this.add(error, highGbc);
     }
 
     private JButton createButton(String text, ActionListener listener) {
@@ -94,11 +95,5 @@ public class LoginScreen implements Screen {
         button.addActionListener(listener);
 
         return button;
-    }
-
-
-    @Override
-    public Container getContentPane() {
-        return loginScreen;
     }
 }

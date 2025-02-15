@@ -3,11 +3,15 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 
-public class BackgroundPanel extends JComponent {
+public class Background extends JPanel {
     private final Image image;
 
-    public BackgroundPanel(Image i) {
-        this.image = i;
+    public Background(Image img) {
+        this.image = img;
+    }
+
+    public Background(ImageIcon img) {
+        this.image = img.getImage();
     }
 
     @Override
