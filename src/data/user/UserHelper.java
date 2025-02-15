@@ -31,8 +31,6 @@ public class UserHelper {
                     throw new RuntimeException(e);
                 }
             }
-        } else {
-            throw new RuntimeException("Could not find user list!");
         }
     }
 

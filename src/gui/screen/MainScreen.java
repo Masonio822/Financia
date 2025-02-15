@@ -2,7 +2,6 @@ package gui.screen;
 
 import data.Transaction;
 import data.user.LoginUser;
-import gui.AddTransactionDialog;
 import gui.GuiUtils;
 import gui.observer.Notifier;
 import gui.observer.Observer;
@@ -22,8 +21,7 @@ import java.awt.event.FocusListener;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
-public class MainScreen implements Screen, Observer {
-    private final JPanel mainPanel = new JPanel(new BorderLayout());
+public class MainScreen extends Screen implements Observer {
     private final JLabel balanceDisplay;
     private final DefaultTableModel transactionTableModel = new DefaultTableModel(new String[]{
         "Company",
@@ -46,12 +44,13 @@ public class MainScreen implements Screen, Observer {
 
     public MainScreen() {
         Notifier.addObserver(this);
+        this.setLayout(new BorderLayout());
 
         JLabel header = new JLabel("Financia");
         header.setFont(ResourceLoader.getInstance().getRighteousFont(52));
         header.setForeground(new Color(224, 159, 54));
         JLabel welcome = new JLabel("Welcome, " + LoginUser.getLoggedInUser().getUsername() + "!");
-        mainPanel.add(GuiUtils.group(GuiUtils.VERTICAL, header, welcome), BorderLayout.NORTH);
+        this.add(GuiUtils.group(GuiUtils.VERTICAL, header, welcome), BorderLayout.NORTH);
 
         balanceDisplay = new JLabel();
         DecimalFormat df = new DecimalFormat("#,###.00");
@@ -62,17 +61,23 @@ public class MainScreen implements Screen, Observer {
 
         JPanel searchGroup = GuiUtils.group(GuiUtils.HORIZONTAL,
                 balanceDisplay,
-                new JLabel(GuiUtils.resizeImage(new ImageIcon("src\\resources\\assets\\search_icon.png"), new Dimension(20, 20))),
+                new JLabel(GuiUtils.resizeImage(ResourceLoader.getInstance().getSearchIcon(), new Dimension(20, 20))),
                 searchField
         );
         JPanel transactionGrouping = GuiUtils.group(GuiUtils.VERTICAL, searchGroup, transactionList);
         transactionGrouping.setBorder(new EmptyBorder(150, 100, 75, 100));
-        mainPanel.add(transactionGrouping, BorderLayout.CENTER);
+        this.add(transactionGrouping, BorderLayout.CENTER);
 
         JButton addTransactionButton = getTransactionButton();
-        JPanel p = GuiUtils.align(GuiUtils.RIGHT, addTransactionButton);
-        p.setBorder(new EmptyBorder(0, 0, 25, 50));
-        mainPanel.add(p, BorderLayout.SOUTH);
+        JButton logoutButton = getLogoutButton();
+
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(new EmptyBorder(0, 25, 20, 25));
+        JPanel vertP = new JPanel(new GridBagLayout());
+        vertP.add(addTransactionButton);
+        p.add(vertP, BorderLayout.EAST);
+        p.add(logoutButton, BorderLayout.WEST);
+        this.add(p, BorderLayout.SOUTH);
     }
 
     private JScrollPane getTable() {
@@ -89,6 +94,20 @@ public class MainScreen implements Screen, Observer {
         transactionTable.setRowSorter(rowSorter);
 
         return new JScrollPane(transactionTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    }
+
+    private JButton getLogoutButton() {
+        JButton button = new JButton();
+        ImageIcon icon = ResourceLoader.getInstance().getLogoutIcon();
+        icon = GuiUtils.resizeImage(icon, new Dimension(50, 50));
+        button.setIcon(icon);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.addActionListener(l -> LoginUser.logout());
+
+        return button;
     }
 
     private JButton getTransactionButton() {
@@ -113,11 +132,7 @@ public class MainScreen implements Screen, Observer {
         addTransactionButton.setFocusPainted(false);
         addTransactionButton.setOpaque(false);
 
-        addTransactionButton.addActionListener(l -> {
-            JDialog addMenu = new AddTransactionDialog();
-            addMenu.setVisible(true);
-            addMenu.setLocationRelativeTo(App.getInstance().getFrame());
-        });
+        addTransactionButton.addActionListener(l -> App.getInstance().switchScreen(new AddTransactionScreen()));
         return addTransactionButton;
     }
 
@@ -167,11 +182,6 @@ public class MainScreen implements Screen, Observer {
         });
 
         return searchField;
-    }
-
-    @Override
-    public Container getContentPane() {
-        return mainPanel;
     }
 
     @Override
